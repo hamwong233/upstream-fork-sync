@@ -1,0 +1,78 @@
+schema_version: 1
+branch: fork-branch-name
+
+upstream_baseline:
+  remote: upstream
+  ref: upstream/main
+  frozen_commit: REPLACE_WITH_FROZEN_COMMIT
+
+allowed_branch_paths:
+  - path/or/glob/owned/by/fork/**
+  - docs/fork-sync/**
+  - scripts/fork-sync/**
+
+features:
+  - id: build-and-sync-tooling
+    title: Build and sync tooling
+    layer: build
+    must_keep: true
+    summary: >
+      Describe the fork-only build/package/workflow behavior that must survive
+      upstream sync.
+    branch_paths:
+      - scripts/fork-sync/**
+      - docs/fork-sync/**
+      - fork-frontend/package.json
+    upstream_touchpoints:
+      - Dockerfile
+      - makefile
+      - package.json
+      - upstream/frontend/**
+    api_contracts: []
+    settings_keys: []
+    tests:
+      - your-build-command
+      - your-overlay-check
+      - your-record-check
+    review:
+      keep_strategy: keep upstream as the repository base and re-apply only the minimum fork-specific wiring.
+      review_required_when_touched: always
+      checklist:
+        - Confirm the upstream-owned build layout still supports the fork-specific wiring.
+        - Drop old drift that no longer reflects a real fork requirement.
+      questions:
+        - Did upstream make part of this fork wiring obsolete?
+        - Should any touched upstream file become the new base instead of staying overridden?
+    source_commits:
+      - REPLACE_WITH_SOURCE_COMMIT_OR_REMOVE
+
+  - id: fork-product-surface
+    title: Fork product surface
+    layer: backend+frontend
+    must_keep: true
+    summary: >
+      Describe one stable fork feature group such as branding, pricing,
+      enterprise workflow, analytics, or customer-specific modules.
+    branch_paths:
+      - fork-frontend/src/features/**
+      - fork-backend/**
+    upstream_touchpoints:
+      - upstream/frontend/src/features/**
+      - upstream/backend/**
+    api_contracts:
+      - Describe public routes, DTOs, settings, or behavior that must survive.
+    settings_keys:
+      - OptionalSettingKey
+    tests:
+      - focused-test-or-smoke-check
+    review:
+      keep_strategy: preserve upstream behavior first, then re-apply only the minimum fork delta.
+      review_required_when_touched: always
+      checklist:
+        - Re-check the fork-only contract against the new upstream implementation.
+        - Keep upstream as the base file shape whenever both sides changed the same area.
+      questions:
+        - Did upstream add equivalent behavior so the fork code can shrink or disappear?
+        - Does this feature still belong in the fork, or has it become stale drift?
+    source_commits:
+      - REPLACE_WITH_SOURCE_COMMIT_OR_REMOVE

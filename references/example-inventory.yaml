@@ -1,0 +1,167 @@
+schema_version: 1
+branch: acme-enterprise
+
+upstream_baseline:
+  remote: upstream
+  ref: upstream/main
+  frozen_commit: "5f3e8c17b8a7c4eab7f24ab2c1f0d3d3a4d88c77"
+
+allowed_branch_paths:
+  - .agents/skills/upstream-fork-sync/**
+  - docs/fork-feature-inventory.yaml
+  - docs/fork-sync-reviews/**
+  - scripts/fork-sync/**
+  - enterprise/**
+  - web/enterprise/**
+
+features:
+  - id: build-and-sync-tooling
+    title: Build and sync tooling
+    layer: build
+    must_keep: true
+    summary: >
+      Keep the enterprise frontend build, fork-maintenance scripts, and
+      verification workflow in place while treating upstream as the repository
+      base.
+    branch_paths:
+      - docs/fork-feature-inventory.yaml
+      - docs/fork-sync-reviews/**
+      - scripts/fork-sync/**
+      - web/enterprise/package.json
+    upstream_touchpoints:
+      - Dockerfile
+      - makefile
+      - package.json
+      - web/default/**
+    api_contracts: []
+    settings_keys: []
+    tests:
+      - bash scripts/fork-sync/verify-records.sh --worktree
+      - bash scripts/fork-sync/verify-overlay.sh
+      - bun run --filter acme-enterprise-web build
+    review:
+      keep_strategy: keep upstream as the repository base and re-apply only the minimum build and governance wiring required by the enterprise variant.
+      review_required_when_touched: always
+      checklist:
+        - Confirm the enterprise frontend still builds without moving fork customization into upstream-owned frontend paths.
+        - Confirm the fork-maintenance scripts still reflect the real workflow instead of stale project history.
+      questions:
+        - Did upstream change the build layout enough that part of the fork wiring can now be deleted?
+        - Should any current script or guard become a shared upstream practice instead of a fork-only override?
+    source_commits:
+      - ENTERPRISE_BUILD_COMMIT
+
+  - id: auth-and-enterprise-sso
+    title: Auth and enterprise SSO
+    layer: backend+frontend
+    must_keep: true
+    summary: >
+      Preserve SAML/OIDC enterprise sign-in, organization-aware onboarding,
+      and admin-only identity controls on top of the upstream auth flow.
+    branch_paths:
+      - enterprise/auth/**
+      - web/enterprise/src/features/auth/**
+      - web/enterprise/src/routes/(auth)/**
+    upstream_touchpoints:
+      - controller/oauth.go
+      - controller/user.go
+      - dto/**
+      - model/user.go
+      - web/default/src/features/auth/**
+      - web/default/src/routes/(auth)/**
+    api_contracts:
+      - SSO callback and organization-aware sign-in flow
+      - organization-bound user provisioning behavior
+    settings_keys:
+      - SamlEnabled
+      - OidcIssuer
+      - OrganizationProvisioningMode
+    tests:
+      - go test ./controller ./model ./service ./oauth
+      - smoke enterprise sign-in flow
+    review:
+      keep_strategy: preserve upstream auth behavior first, then add the minimum SSO and organization-aware fork behavior.
+      review_required_when_touched: always
+      checklist:
+        - Re-check SSO callbacks, provisioning, and admin identity controls against the new upstream auth stack.
+        - Keep upstream route and DTO shape as the base unless the enterprise contract truly requires extra fields.
+      questions:
+        - Did upstream add equivalent auth features that let the fork code shrink?
+        - Did upstream change sign-in DTOs or routes enough to require compatibility adapters?
+    source_commits:
+      - ENTERPRISE_AUTH_COMMIT
+
+  - id: billing-and-entitlements
+    title: Billing, contracts, and entitlements
+    layer: backend+frontend
+    must_keep: true
+    summary: >
+      Preserve contract-aware billing, seat entitlements, invoice reporting,
+      and enterprise billing UI on top of the upstream billing engine.
+    branch_paths:
+      - enterprise/billing/**
+      - web/enterprise/src/features/billing/**
+      - web/enterprise/src/routes/_admin/billing/**
+    upstream_touchpoints:
+      - controller/subscription.go
+      - controller/topup.go
+      - model/subscription.go
+      - service/quota.go
+      - web/default/src/features/subscriptions/**
+      - web/default/src/features/wallet/**
+    api_contracts:
+      - enterprise entitlement summary endpoint
+      - contract-aware billing payloads
+      - invoice export behavior
+    settings_keys:
+      - EnterpriseBillingEnabled
+      - SeatEnforcementMode
+      - InvoiceExportRetentionDays
+    tests:
+      - go test ./controller ./model ./service
+      - smoke billing admin pages
+    review:
+      keep_strategy: keep upstream billing logic as the base and re-apply only the enterprise-specific entitlement and reporting layer.
+      review_required_when_touched: always
+      checklist:
+        - Re-check seat enforcement, invoice reporting, and entitlement summaries against the new upstream billing flow.
+        - Confirm any new upstream pricing behavior is adopted first before re-adding fork specifics.
+      questions:
+        - Did upstream cover part of the reporting or subscription behavior already?
+        - Can any current enterprise-only DTO be replaced by an additive field on the upstream payload?
+    source_commits:
+      - ENTERPRISE_BILLING_COMMIT
+
+  - id: branded-frontend-and-navigation
+    title: Branded frontend and enterprise navigation
+    layer: frontend
+    must_keep: true
+    summary: >
+      Preserve the branded landing page, enterprise navigation structure, and
+      dashboard modules while rebuilding the enterprise frontend from the
+      upstream frontend base on broad syncs.
+    branch_paths:
+      - web/enterprise/src/features/home/**
+      - web/enterprise/src/features/navigation/**
+      - web/enterprise/src/routes/**
+    upstream_touchpoints:
+      - web/default/src/components/**
+      - web/default/src/features/**
+      - web/default/src/routes/**
+    api_contracts:
+      - enterprise route structure and compatibility redirects
+    settings_keys: []
+    tests:
+      - bun run --filter acme-enterprise-web build
+      - smoke homepage, navigation, and admin routes
+    review:
+      keep_strategy: copy the upstream frontend base first, then replay only the intentional enterprise navigation and branded-product deltas.
+      review_required_when_touched: always
+      checklist:
+        - Confirm shared frontend infrastructure still follows upstream instead of preserving old fork drift.
+        - Re-check homepage, navigation, and compatibility routes after upstream route-shell changes.
+      questions:
+        - Did upstream add shared UI that makes any fork-only component unnecessary?
+        - Are any current route or navigation differences still product requirements, or only historical drift?
+    source_commits:
+      - ENTERPRISE_FRONTEND_COMMIT

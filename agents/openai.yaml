@@ -1,0 +1,4 @@
+interface:
+  display_name: "Upstream Fork Sync"
+  short_description: "Maintain long-lived upstream forks safely"
+  default_prompt: "Use $upstream-fork-sync to design or run a safe upstream sync workflow for this fork."
