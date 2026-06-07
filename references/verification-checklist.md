@@ -6,8 +6,8 @@ Use this checklist when defining or auditing the fork-maintenance guardrails.
 
 The overlay check should answer:
 
-- Did upstream-owned paths stay upstream-shaped?
-- Are current fork differences confined to approved fork paths?
+- Did upstream-owned paths stay identical to upstream except for explicitly approved minimal upstream patches?
+- Are current fork differences confined to approved fork paths or approved minimal upstream patch paths?
 - Is every changed fork file covered by an inventoried feature group?
 
 Good candidates:
@@ -24,6 +24,7 @@ The record check should answer:
 - Did a change alter feature coverage, touchpoints, contracts, tests, or workflow behavior?
 - If yes, was the inventory updated?
 - If the frozen upstream baseline changed, was a sync review worksheet added?
+- If an upstream-owned file keeps a fork diff, is that file explicitly listed as an approved minimal upstream patch?
 
 Do not require maintainers to update redundant narrative docs just to satisfy a hook.
 

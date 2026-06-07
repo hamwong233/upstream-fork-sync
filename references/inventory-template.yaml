@@ -5,6 +5,7 @@ upstream_baseline:
   remote: upstream
   ref: upstream/main
   frozen_commit: REPLACE_WITH_FROZEN_COMMIT
+  selection_reason: REPLACE_WITH_BASELINE_SELECTION_REASON
 
 allowed_branch_paths:
   - path/or/glob/owned/by/fork/**
@@ -23,12 +24,14 @@ features:
       - scripts/fork-sync/**
       - docs/fork-sync/**
       - fork-frontend/package.json
+    approved_upstream_patch_paths: []
     upstream_touchpoints:
       - Dockerfile
       - makefile
       - package.json
       - upstream/frontend/**
     api_contracts: []
+    data_contracts: []
     settings_keys: []
     tests:
       - your-build-command
@@ -56,11 +59,14 @@ features:
     branch_paths:
       - fork-frontend/src/features/**
       - fork-backend/**
+    approved_upstream_patch_paths: []
     upstream_touchpoints:
       - upstream/frontend/src/features/**
       - upstream/backend/**
     api_contracts:
       - Describe public routes, DTOs, settings, or behavior that must survive.
+    data_contracts:
+      - Describe migration, persistence, seed, or compatibility data that must survive.
     settings_keys:
       - OptionalSettingKey
     tests:

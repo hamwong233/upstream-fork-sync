@@ -11,7 +11,7 @@ The goal is not "merge until it compiles". The goal is:
 
 - keep the upstream codebase as the implementation base;
 - preserve intentional fork-only behavior;
-- avoid leaking fork customization into upstream-owned paths;
+- avoid leaking fork customization into upstream-owned paths, except for explicitly approved minimal patches;
 - make future upstream syncs safer instead of harder.
 
 ## When This Skill Fits
@@ -88,6 +88,7 @@ Create one machine-readable inventory file that records, per feature group:
 - layer (`build`, `frontend`, `backend`, `backend+frontend`, etc.);
 - summary of the fork-only contract;
 - branch-owned paths;
+- approved minimal upstream patch paths, if any;
 - upstream touchpoints to re-review on sync;
 - API/settings/data contracts that must survive;
 - verification hooks;
@@ -102,7 +103,7 @@ If the repo does not already have this structure, start from `references/invento
 For a broad upstream update:
 
 - create a temporary branch or worktree from the chosen upstream baseline;
-- keep the full repository upstream-shaped first;
+- keep the full repository identical to upstream first, except for explicitly replayed fork deltas;
 - only then re-apply fork behavior feature by feature.
 
 Do not broad-sync by patching the existing fork branch in place.
@@ -156,8 +157,8 @@ If the repo does not already have a review format, start from `references/sync-r
 
 During replay and before merge-back, check:
 
-- upstream-owned paths stay upstream-shaped;
-- fork differences stay inside approved fork paths;
+- upstream-owned paths stay identical to upstream unless the inventory explicitly approves a minimal patch there;
+- fork differences stay inside approved fork paths or approved minimal upstream patch paths;
 - every changed fork file is covered by inventory;
 - feature-group verification still passes.
 
@@ -168,6 +169,7 @@ Bring the rebuild result back to the real fork branch only after:
 - overlay/path validation passes;
 - feature coverage is inventoried;
 - required human review records exist;
+- any remaining upstream-owned diffs are explicitly approved as minimal patches in inventory;
 - targeted tests/builds pass.
 
 ## Direct-Edit Exception
@@ -187,8 +189,10 @@ A good inventory should be stable and reviewable.
 Per feature group, capture:
 
 - `branch_paths`: where fork-owned changes live;
+- `approved_upstream_patch_paths`: narrow upstream-owned files that may carry a documented minimal fork patch;
 - `upstream_touchpoints`: upstream files that can invalidate this feature on sync;
 - `api_contracts`: public API/DTO/route/setting contracts to preserve;
+- `data_contracts`: persisted data, migration, seed, or compatibility contracts to preserve;
 - `tests`: commands or smoke checks;
 - `review.keep_strategy`: how to preserve the feature on top of upstream;
 - `review.checklist`: what must be re-checked by a human;

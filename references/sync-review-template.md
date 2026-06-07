@@ -5,6 +5,7 @@
 - Frozen baseline in inventory:
 - Review base:
 - Review target:
+- Target selection reason:
 - Upstream changed files:
 - Matched feature groups:
 - Unmatched upstream files:
@@ -18,7 +19,7 @@
 ## Global Checklist
 
 - [ ] Recreate any derived frontend/app variant from the target upstream base before replaying fork-specific frontend behavior.
-- [ ] Keep upstream-owned paths identical to the target upstream after replay.
+- [ ] Keep upstream-owned paths identical to the target upstream after replay, except for explicitly approved minimal upstream patches.
 - [ ] Run overlay/path verification during replay and again before merge-back.
 - [ ] Run focused verification for each feature group that was replayed.
 - [ ] Record keep/adapt/drop/split decisions in this worksheet before merge-back.
@@ -42,6 +43,9 @@ Public APIs / contracts to preserve:
 
 Settings / DTO keys to re-check:
 - `OptionalKey`
+
+Data / migration contracts to re-check:
+- Describe persisted data, migration, or compatibility requirements here.
 
 Human review checklist:
 - [ ] Re-check the fork-only contract against the new upstream implementation.
@@ -71,8 +75,8 @@ Unmatched-file resolution:
 
 ## Final Sign-Off
 
-- [ ] Upstream-owned path diff to target upstream is empty.
-- [ ] Remaining fork diff is limited to audited fork-owned files.
+- [ ] Upstream-owned path diff to target upstream is empty except for explicitly approved minimal upstream patches.
+- [ ] Remaining fork diff is limited to audited fork-owned files and explicitly approved minimal upstream patch files.
 - [ ] Inventory still reflects the real fork contract after replay.
 - [ ] This worksheet records what was kept, adapted, dropped, or split.
 - [ ] Frozen baseline metadata was updated only after verification passed.

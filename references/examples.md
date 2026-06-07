@@ -73,11 +73,12 @@ Goal:
 Suggested order:
 1. Freeze the current upstream baseline.
 2. Mark upstream-owned paths versus fork-owned paths.
-3. Create one inventory with 4-8 stable feature groups.
-4. Add overlay/path verification.
-5. Add record/inventory verification.
-6. Create one review-record template for broad syncs.
-7. Dry-run the checks against the current fork diff and fix whatever they reveal.
+3. Mark any unavoidable upstream-owned file patches as explicit minimal-patch exceptions.
+4. Create one inventory with 4-8 stable feature groups.
+5. Add overlay/path verification.
+6. Add record/inventory verification.
+7. Create one review-record template for broad syncs.
+8. Dry-run the checks against the current fork diff and fix whatever they reveal.
 
 Expected output:
 - maintainers can now answer `what is fork-only`, `what changed upstream that matters`, and `did this sync forget anything` without relying on memory.

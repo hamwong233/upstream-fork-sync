@@ -5,6 +5,7 @@ upstream_baseline:
   remote: upstream
   ref: upstream/main
   frozen_commit: "5f3e8c17b8a7c4eab7f24ab2c1f0d3d3a4d88c77"
+  selection_reason: "Chosen because it was the last production-synced upstream commit before the enterprise catch-up started."
 
 allowed_branch_paths:
   - .agents/skills/upstream-fork-sync/**
@@ -28,12 +29,15 @@ features:
       - docs/fork-sync-reviews/**
       - scripts/fork-sync/**
       - web/enterprise/package.json
+    approved_upstream_patch_paths:
+      - package.json
     upstream_touchpoints:
       - Dockerfile
       - makefile
       - package.json
       - web/default/**
     api_contracts: []
+    data_contracts: []
     settings_keys: []
     tests:
       - bash scripts/fork-sync/verify-records.sh --worktree
@@ -62,6 +66,8 @@ features:
       - enterprise/auth/**
       - web/enterprise/src/features/auth/**
       - web/enterprise/src/routes/(auth)/**
+    approved_upstream_patch_paths:
+      - controller/oauth.go
     upstream_touchpoints:
       - controller/oauth.go
       - controller/user.go
@@ -72,6 +78,8 @@ features:
     api_contracts:
       - SSO callback and organization-aware sign-in flow
       - organization-bound user provisioning behavior
+    data_contracts:
+      - identity-provider mapping records remain compatible with existing enterprise tenants
     settings_keys:
       - SamlEnabled
       - OidcIssuer
@@ -102,6 +110,8 @@ features:
       - enterprise/billing/**
       - web/enterprise/src/features/billing/**
       - web/enterprise/src/routes/_admin/billing/**
+    approved_upstream_patch_paths:
+      - model/subscription.go
     upstream_touchpoints:
       - controller/subscription.go
       - controller/topup.go
@@ -113,6 +123,9 @@ features:
       - enterprise entitlement summary endpoint
       - contract-aware billing payloads
       - invoice export behavior
+    data_contracts:
+      - subscription and entitlement records remain backward compatible across the sync
+      - invoice export schema stays readable for existing downstream consumers
     settings_keys:
       - EnterpriseBillingEnabled
       - SeatEnforcementMode
@@ -144,12 +157,14 @@ features:
       - web/enterprise/src/features/home/**
       - web/enterprise/src/features/navigation/**
       - web/enterprise/src/routes/**
+    approved_upstream_patch_paths: []
     upstream_touchpoints:
       - web/default/src/components/**
       - web/default/src/features/**
       - web/default/src/routes/**
     api_contracts:
       - enterprise route structure and compatibility redirects
+    data_contracts: []
     settings_keys: []
     tests:
       - bun run --filter acme-enterprise-web build

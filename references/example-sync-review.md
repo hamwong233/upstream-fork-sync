@@ -5,6 +5,7 @@
 - Frozen baseline in inventory: `upstream/main@5f3e8c17b8a7c4eab7f24ab2c1f0d3d3a4d88c77`
 - Review base: `5f3e8c17b8a7c4eab7f24ab2c1f0d3d3a4d88c77`
 - Review target: `upstream/main@9a1fd0d9d3f90c93da9f4ee8900b3c0cb87c51e4`
+- Target selection reason: `Chosen because it is the latest upstream main commit that passed the fork's dependency compatibility smoke run.`
 - Upstream changed files: `84`
 - Matched feature groups: `4`
 - Unmatched upstream files: `3`
@@ -18,7 +19,7 @@
 ## Global Checklist
 
 - [x] Recreate the enterprise frontend from the target upstream frontend base before replaying fork-specific frontend behavior.
-- [x] Keep upstream-owned paths identical to the target upstream after replay.
+- [x] Keep upstream-owned paths identical to the target upstream after replay, except for explicitly approved minimal upstream patches in `package.json`, `controller/oauth.go`, and `model/subscription.go`.
 - [x] Run overlay/path verification during replay and again before merge-back.
 - [x] Run focused verification for each feature group that was replayed.
 - [x] Record keep/adapt/drop/split decisions in this worksheet before merge-back.
@@ -45,6 +46,9 @@ Public APIs / contracts to preserve:
 - none
 
 Settings / DTO keys to re-check:
+- none
+
+Data / migration contracts to re-check:
 - none
 
 Human review checklist:
@@ -89,6 +93,9 @@ Settings / DTO keys to re-check:
 - `SamlEnabled`
 - `OidcIssuer`
 
+Data / migration contracts to re-check:
+- identity-provider mapping records remain compatible with existing enterprise tenants
+
 Human review checklist:
 - [x] Re-check SSO callbacks and provisioning against the new upstream auth behavior.
 - [x] Keep upstream route and DTO shape as the base unless the enterprise contract truly requires additive fields.
@@ -130,6 +137,10 @@ Settings / DTO keys to re-check:
 - `EnterpriseBillingEnabled`
 - `SeatEnforcementMode`
 
+Data / migration contracts to re-check:
+- subscription and entitlement records remain backward compatible across the sync
+- invoice export schema stays readable for existing downstream consumers
+
 Human review checklist:
 - [x] Re-check seat enforcement, invoice reporting, and entitlement summaries against the new upstream billing flow.
 - [x] Confirm new upstream pricing behavior is adopted first before re-adding fork specifics.
@@ -156,7 +167,7 @@ Decision:
 - Review trigger: `always`
 - Must keep: `true`
 - Branch contract:
-  The enterprise frontend still has branded landing pages, a custom navigation structure, and compatibility redirects, while shared UI infrastructure stays upstream-shaped.
+  The enterprise frontend still has branded landing pages, a custom navigation structure, and compatibility redirects, while shared UI infrastructure stays identical to upstream by default.
 
 Changed upstream touchpoints:
 - `web/default/src/routes/__root.tsx`
@@ -168,6 +179,9 @@ Public APIs / contracts to preserve:
 - compatibility redirects
 
 Settings / DTO keys to re-check:
+- none
+
+Data / migration contracts to re-check:
 - none
 
 Human review checklist:
@@ -201,8 +215,8 @@ Unmatched-file resolution:
 
 ## Final Sign-Off
 
-- [x] Upstream-owned path diff to target upstream is empty.
-- [x] Remaining fork diff is limited to audited fork-owned files.
+- [x] Upstream-owned path diff to target upstream is empty except for explicitly approved minimal upstream patches.
+- [x] Remaining fork diff is limited to audited fork-owned files and explicitly approved minimal upstream patch files.
 - [x] Inventory still reflects the real fork contract after replay.
 - [x] This worksheet records what was kept, adapted, dropped, or split.
 - [x] Frozen baseline metadata was updated only after verification passed.

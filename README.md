@@ -76,8 +76,8 @@ Poor fit:
 5. Rebuild any derived frontend/app from the upstream frontend base first.
 6. Replay fork behavior feature by feature, not by raw directory overlay.
 7. Verify continuously:
-   - upstream-owned paths stay upstream-shaped;
-   - fork drift stays in approved paths;
+   - upstream-owned paths stay identical to upstream unless the inventory explicitly approves a minimal patch there;
+   - fork drift stays in approved fork paths or approved minimal upstream patch paths;
    - every changed fork file is covered by the inventory;
    - targeted tests and smoke checks still pass.
 8. Merge back only after the replay and review record are complete.
@@ -88,7 +88,7 @@ If you are adopting this workflow in a repo for the first time:
 
 1. Read `references/adoption-checklist.md`.
 2. Create one feature inventory from `references/inventory-template.yaml`.
-3. Decide which paths must stay upstream-shaped and which paths may carry fork-specific behavior.
+3. Decide which paths must stay identical to upstream by default and which paths may carry fork-specific behavior.
 4. Add an overlay/path verification command and a record/inventory verification command.
 5. Create a review-record directory using `references/sync-review-template.md`.
 6. Dry-run the workflow against your current upstream gap before trusting it.
@@ -103,7 +103,7 @@ If you prefer starting from something concrete instead of blank templates:
 - Do not treat the old fork tree as the implementation base for a broad upstream sync.
 - Do not copy the whole fork over upstream and call that a rebuild.
 - Do not preserve drift just because it already existed.
-- Keep upstream files as upstream whenever possible, then add only the minimum fork delta.
+- Keep upstream files identical to upstream by default; if a fork requirement truly needs an upstream-owned file patch, record that file explicitly and keep the patch minimal.
 - Use direct edits on the live fork branch only for narrow changes where the final result is still clearly `upstream + minimal fork delta`.
 
 ## Suggested Target Repo Layout

@@ -10,8 +10,9 @@ Use this checklist when introducing the upstream-fork-sync workflow into a repos
 
 ## 2. Define the ownership boundary
 
-- Decide which paths must always stay upstream-shaped.
+- Decide which paths must always stay identical to upstream by default.
 - Decide which paths may carry fork-only behavior.
+- Decide whether any upstream-owned file is allowed to carry a minimal fork patch, and require those cases to be explicitly inventoried.
 - Decide whether the fork has one derived frontend/app variant or several.
 - Write down the direct-edit exception: when is in-place editing acceptable, and when must maintainers switch to an upstream-based rebuild workspace?
 
@@ -33,6 +34,7 @@ Use this checklist when introducing the upstream-fork-sync workflow into a repos
 - Make sure the worksheet records:
   - old frozen upstream baseline
   - new upstream target
+  - why that sync target was chosen
   - touched feature groups
   - unmatched upstream files
   - keep/adapt/drop/split decisions
@@ -58,6 +60,7 @@ Use this checklist when introducing the upstream-fork-sync workflow into a repos
 - Generate one real review worksheet.
 - Make sure the workflow catches:
   - forbidden drift in upstream-owned paths
+  - upstream-owned diffs that were not explicitly approved as minimal patches
   - changed files missing from inventory coverage
   - missing human review records on baseline changes
 
